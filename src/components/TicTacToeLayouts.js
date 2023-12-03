@@ -1,12 +1,11 @@
-import styles from '../App.module.css';
+import { Component } from 'react';
 
-function TicTacToeLayouts(props) {
-    const { buttonText, xRound, winner, onClickCell, onNewGame } = props;
-
-    const renderButtons = () => {
+class TicTacToeLayouts extends Component {
+    renderButtons = () => {
+        const { buttonText, onClickCell } = this.props;
         return buttonText.map((text, index) => (
             <button
-                className={styles.buttonCell}
+                className="bg-grey-500 text-white w-[100px] h-[100px] p-2.5 text-[26px] border border-white rounded-[5px] cursor-pointer"
                 key={index}
                 onClick={() => onClickCell(index)}
             >
@@ -14,31 +13,35 @@ function TicTacToeLayouts(props) {
             </button>
         ));
     }
-
-    return (
-        <div
-            className={styles.app}
-        >
-            <header
-                className={styles.appHeader}
+    render() {
+        const { xRound, winner, onNewGame } = this.props
+        return (
+            <div
+                className="text-center"
             >
-                <button
-                    className={styles.newGameButton}
-                    onClick={onNewGame}
+                <header
+                    className="bg-[#282c34] min-h-screen flex flex-col-reverse gap-3.75 items-center justify-center text-xs text-white"
                 >
-                    Новая игра
-                </button>
-                <p
-                    className={styles.cellsModule}
-                >
-                    {renderButtons()}
-                </p>
-                <p>
-                    {winner ? `${winner}` : `Сейчас ходит: ${xRound ? 'X' : 'O'}`}
-                </p>
-            </header>
-        </div>
-    );
+                    <button
+                        className="p-2.5 text-2xl"
+                        onClick={onNewGame}
+                    >
+                        Новая игра
+                    </button>
+                    <p
+                        className="min-w-[300px] min-h-[300px] grid grid-cols-3"
+                    >
+                        {this.renderButtons()}
+                    </p>
+                    <p
+                        className="text-xl mb-4"
+                    >
+                        {winner ? `${winner}` : `Сейчас ходит: ${xRound ? 'X' : 'O'}`}
+                    </p>
+                </header>
+            </div>
+        );
+    }
 }
 
 export default TicTacToeLayouts;

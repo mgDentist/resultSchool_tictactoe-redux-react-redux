@@ -1,26 +1,27 @@
+import { connect } from 'react-redux';
+import { Component } from 'react';
 import TicTacToeLayouts from './TicTacToeLayouts';
-import { useSelector, useDispatch } from 'react-redux';
 import { updateButtonText, toggleXRound, setWinner, resetGame } from '../actions/gameAction';
 
-function TicTacToeContainer() {
-    const dispatch = useDispatch();
-    const { buttonText, xRound, winner } = useSelector((state) => state.game);
+class TicTacToeContainer extends Component {
 
-    const onClickCell = (index) => {
-        const newText = [...buttonText];
-        if (newText[index] === "" && winner === null) {
+    onClickCell = (index) => {
+        const { buttonText, xRound, winner, updateButtonText, toggleXRound } = this.props;
+        if (buttonText[index] === "" && winner === null) {
+            const newText = [...buttonText];
+
             newText[index] = xRound ? "X" : "O";
-            dispatch(updateButtonText(newText));
-            whoIsWinner(newText);
-            dispatch(toggleXRound());
+            updateButtonText(newText);
+            this.whoIsWinner(newText);
+            toggleXRound();
         }
-    }
+    };
 
-    const onNewGame = () => {
-        dispatch(resetGame());
-    }
+    onNewGame = () => {
+        this.props.resetGame();
+    };
 
-    const whoIsWinner = (newText) => {
+    whoIsWinner = (newText) => {
         const winPatterns = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8],
             [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -34,25 +35,40 @@ function TicTacToeContainer() {
                 newText[a] === newText[b] &&
                 newText[a] === newText[c]
             ) {
-                dispatch(setWinner(`Победил ${newText[a]}`));
+                this.props.setWinner(`Победил ${newText[a]}`);
                 return;
             }
         }
 
-        if (!newText.includes("") && winner === null) {
-            dispatch(setWinner("Ничья"));
+        if (!newText.includes("") && this.props.winner === null) {
+            this.props.setWinner("Ничья");
         }
     }
 
-    return (
-        <TicTacToeLayouts
-            buttonText={buttonText}
-            xRound={xRound}
-            winner={winner}
-            onClickCell={onClickCell}
-            onNewGame={onNewGame}
-        />
-    );
+    render() {
+        const { buttonText, xRound, winner } = this.props;
+        return (
+            <TicTacToeLayouts
+                buttonText={buttonText}
+                xRound={xRound}
+                winner={winner}
+                onClickCell={this.onClickCell}
+                onNewGame={this.onNewGame}
+            />
+        );
+    }
 }
 
-export default TicTacToeContainer;
+const mapStateToProps = (state) => ({
+    buttonText: state.game.buttonText,
+    xRound: state.game.xRound,
+    winner: state.game.winner
+});
+
+const mapDispatchToProps = {
+    updateButtonText,
+    toggleXRound,
+    setWinner,
+    resetGame
+}
+export default connect(mapStateToProps, mapDispatchToProps)(TicTacToeContainer);
